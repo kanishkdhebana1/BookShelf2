@@ -65,11 +65,11 @@ import com.example.bookshelf2.R
 import com.example.bookshelf2.ui.bookdetail.nonSpatialExpressiveSpring
 import com.example.bookshelf2.ui.bookdetail.spatialExpressiveSpring
 import com.example.bookshelf2.ui.components.BookShelfSurface
+import com.example.bookshelf2.ui.home.feed.Feed
 import com.example.bookshelf2.ui.home.library.Library
 import com.example.bookshelf2.ui.home.profile.Profile
-import com.example.bookshelf2.ui.home.search.Result
 import com.example.bookshelf2.ui.home.search.Search
-import com.example.bookshelf2.ui.navigation.MainDestinations
+import com.example.bookshelf2.ui.home.search.SearchViewModel
 import com.example.bookshelf2.ui.theme.BookShelfTheme
 import java.util.Locale
 
@@ -121,26 +121,26 @@ fun NavGraphBuilder.composableWithCompositionLocal(
 
 fun NavGraphBuilder.addHomeGraph(
     onBookSelected: (Long, String, NavBackStackEntry) -> Unit,
+    onSearchClick: (String, NavBackStackEntry) -> Unit,
+    searchViewModel: SearchViewModel,
     modifier: Modifier = Modifier
 ) {
     composable(HomeSections.FEED.route) { from ->
         Feed(
             onBookClick = { id, origin -> onBookSelected(id, origin, from) },
-            modifier = Modifier
+            modifier = modifier
         )
     }
     composable(HomeSections.SEARCH.route) { from ->
-        Search(
-            onSnackClick = { id, origin -> onBookSelected(id, origin, from) },
-            modifier
-        )
-    }
-    composable(MainDestinations.RESULT) {
-        Result(modifier)
+       Search(
+           modifier = modifier,
+           onSearch = { query -> onSearchClick(query, from) },
+           searchViewModel = searchViewModel
+       )
     }
     composable(HomeSections.LIBRARY.route) { from ->
         Library(
-            onSnackClick = { id, origin -> onBookSelected(id, origin, from) },
+            onBookClick = { id, origin -> onBookSelected(id, origin, from) },
             modifier
         )
     }
@@ -150,8 +150,6 @@ fun NavGraphBuilder.addHomeGraph(
 }
 
 
-
-
 enum class HomeSections(
     @StringRes val title: Int,
     val icon: ImageVector,
@@ -159,7 +157,7 @@ enum class HomeSections(
 ) {
     FEED(R.string.home_feed, Icons.Outlined.Home, "home/feed"),
     SEARCH(R.string.home_search, Icons.Outlined.Search, "home/search"),
-    LIBRARY(R.string.library, Icons.Outlined.FavoriteBorder, "home/cart"),
+    LIBRARY(R.string.library, Icons.Outlined.FavoriteBorder, "home/library"),
     PROFILE(R.string.home_profile, Icons.Outlined.AccountCircle, "home/profile")
 }
 

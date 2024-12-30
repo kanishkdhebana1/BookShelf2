@@ -1,4 +1,4 @@
-package com.example.bookshelf2.ui.home
+package com.example.bookshelf2.ui.home.feed
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,6 +15,8 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.bookshelf2.ui.components.BookCardWide
+import com.example.bookshelf2.ui.home.BookshelfUiState
+import com.example.bookshelf2.ui.home.HomeViewModel
 
 @Composable
 fun Feed(
@@ -37,10 +39,6 @@ fun Feed(
 
     }
 
-//    LaunchedEffect(searchTerm) {
-//        homeViewModel.updateSearchTerm(searchTerm)
-//    }
-
     val books = when (val homeUiState = homeViewModel.bookshelfUiState) {
         is BookshelfUiState.Success -> homeUiState.books
         else -> emptyList()
@@ -49,7 +47,7 @@ fun Feed(
     LazyColumn(
         modifier = modifier,
         contentPadding = PaddingValues(
-            start = contentPadding.calculateStartPadding(LayoutDirection.Ltr),
+            start = contentPadding.calculateStartPadding(LayoutDirection.Ltr) + 8.dp,
             top = contentPadding.calculateTopPadding(),
             end = contentPadding.calculateEndPadding(LayoutDirection.Ltr),
             bottom = contentPadding.calculateBottomPadding() + 16.dp // Extra space at the bottom
@@ -59,7 +57,7 @@ fun Feed(
         items(
             items = books,
             key = {
-                book ->
+                    book ->
                 book.id
             }
         ) { book ->

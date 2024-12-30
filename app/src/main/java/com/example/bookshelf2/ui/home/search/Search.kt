@@ -1,10 +1,10 @@
 package com.example.bookshelf2.ui.home.search
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,12 +22,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,19 +34,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.bookshelf2.ui.theme.BookShelfTheme
 import com.example.bookshelf2.ui.theme.Shapes
 
-@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun Search(
-    onSnackClick: (Long, String) -> Unit,
-    modifier: Modifier
-
+    modifier: Modifier,
+    onSearch: (String) -> Unit,
+    searchViewModel: SearchViewModel,
 ) {
+    val searchUiState by searchViewModel.searchUiState.collectAsState()
+
     var query by remember { mutableStateOf("") }
     var selectedType by remember { mutableStateOf("All") }
     var selectedSortBy by remember { mutableStateOf("Most Relevant") }
@@ -56,6 +55,15 @@ fun Search(
     val typeOptions = listOf("All", "Books", "Articles", "Journals")
     val sortByOptions = listOf("Most Relevant", "Newest First", "Oldest First")
     val fileTypeOptions = listOf("All", "PDF", "ePub", "Word")
+
+    LaunchedEffect(searchUiState) {
+        // This ensures recomposition happens when the UI state changes (for example after search)
+        if (searchUiState is SearchUiState.Success || searchUiState is SearchUiState.Error) {
+            // Perform any actions on successful state or error state
+            Log.d("Search", "Search Result State: $searchUiState")
+        }
+    }
+
 
     Column(
         modifier = modifier
@@ -69,7 +77,12 @@ fun Search(
             placeholder = { Text("Search") },
             modifier = Modifier.fillMaxWidth(),
             trailingIcon = {
-                IconButton(onClick = { /* Handle search */ }) {
+                IconButton(
+                    onClick = {
+                        searchViewModel.updateSearchTerm(query)
+                        onSearch(query)
+                    }
+                ) {
                     Icon(
                         Icons.Default.Search, contentDescription = "Search Icon",
                         tint = BookShelfTheme.colors.selectedIconBorderFill
@@ -193,11 +206,3 @@ fun DropdownSelector(
     }
 }
 
-
-@Preview(showBackground = true)
-@Composable
-fun SearchPreview() {
-    BookShelfTheme {
-        Search(onSnackClick = { _, _ -> }, modifier = Modifier)
-    }
-}

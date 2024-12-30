@@ -1,5 +1,6 @@
 package com.example.bookshelf2.ui.navigation
 
+import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
@@ -13,11 +14,11 @@ import androidx.navigation.compose.rememberNavController
 
 
 object MainDestinations {
-    const val HOME_ROUTE = "home"
-    const val BOOK_DETAIL_ROUTE = "book"
-    const val BOOK_ID_KEY = "bookId"
-    const val ORIGIN = "origin"
-    const val RESULT = "result"
+    const val HOME_ROUTE = "Home"
+    const val BOOK_DETAIL_ROUTE = "Book"
+    const val BOOK_ID_KEY = "BookId"
+    const val ORIGIN = "Origin"
+    const val RESULT = "Result"
 }
 
 @Composable
@@ -58,6 +59,13 @@ class BookShelfNavController(
         }
     }
 
+    fun navigateToResult(query: String, from: NavBackStackEntry) {
+        if (from.lifecycleIsResumed()) {
+            val encodedQuery = Uri.encode(query) // Encode the query
+            Log.d("Navigation", "Navigating to result: ${MainDestinations.RESULT}/$encodedQuery")
+            navController.navigate("${MainDestinations.RESULT}/$encodedQuery")
+        }
+    }
 }
 
 private fun NavBackStackEntry.lifecycleIsResumed() =

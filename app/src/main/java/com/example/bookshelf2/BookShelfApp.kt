@@ -4,7 +4,6 @@
 
 package com.example.bookshelf2
 
-import androidx.annotation.ColorRes
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
@@ -16,12 +15,7 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
@@ -34,6 +28,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -49,6 +44,8 @@ import com.example.bookshelf2.ui.home.BookShelfBottomBar
 import com.example.bookshelf2.ui.home.HomeSections
 import com.example.bookshelf2.ui.home.addHomeGraph
 import com.example.bookshelf2.ui.home.composableWithCompositionLocal
+import com.example.bookshelf2.ui.home.search.Result
+import com.example.bookshelf2.ui.home.search.SearchViewModel
 import com.example.bookshelf2.ui.navigation.MainDestinations
 import com.example.bookshelf2.ui.navigation.rememberBookShelfNavController
 import com.example.bookshelf2.ui.theme.BookShelfTheme
@@ -57,6 +54,7 @@ import com.example.bookshelf2.ui.theme.BookShelfTheme
 fun BookShelfApp() {
     BookShelfTheme {
         val bookShelfNavController = rememberBookShelfNavController()
+        val searchViewModel: SearchViewModel = viewModel(factory = SearchViewModel.Factory)
 
         SharedTransitionLayout {
             CompositionLocalProvider(
@@ -71,10 +69,21 @@ fun BookShelfApp() {
                     ) {
                         MainContainer(
                             modifier = Modifier,
-                            onBookSelected = bookShelfNavController::navigateToBookDetail
+                            onBookSelected = bookShelfNavController::navigateToBookDetail,
+                            onSearchClicked = bookShelfNavController::navigateToResult,
+                            searchViewModel = searchViewModel
                         )
                     }
-                    
+
+                    composableWithCompositionLocal(
+                        route = "${MainDestinations.RESULT}/{query}",
+                        arguments = listOf(
+                            navArgument("query") { type = NavType.StringType }
+                        )
+                    ) {
+                        Result(searchViewModel = searchViewModel)
+                    }
+
                     composableWithCompositionLocal(
                         route = "${MainDestinations.BOOK_DETAIL_ROUTE}/" +
                                 "{${MainDestinations.BOOK_ID_KEY}}" +
@@ -103,11 +112,12 @@ fun BookShelfApp() {
 }
 
 
-
 @Composable
 fun MainContainer(
     modifier: Modifier = Modifier,
-    onBookSelected: (Long, String, NavBackStackEntry) -> Unit
+    onBookSelected: (Long, String, NavBackStackEntry) -> Unit,
+    searchViewModel: SearchViewModel,
+    onSearchClicked: (String, NavBackStackEntry) -> Unit
 ) {
     val scaffoldState = rememberBookShelfScaffoldState()
     val nestedNavController = rememberBookShelfNavController()
@@ -168,6 +178,8 @@ fun MainContainer(
         ) {
             addHomeGraph(
                 onBookSelected = onBookSelected,
+                onSearchClick = onSearchClicked,
+                searchViewModel = searchViewModel,
                 modifier = Modifier
                     .padding(padding)
                     .consumeWindowInsets(padding)
@@ -194,20 +206,6 @@ fun CustomTopBar(currentRoute: String, modifier: Modifier = Modifier) {
             )
         },
         modifier = modifier,
-        navigationIcon = {
-            if (currentRoute != HomeSections.FEED.route) {
-                IconButton(onClick = { /* Handle navigation or back press */ }) {
-                    Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-                }
-            }
-        },
-        actions = {
-            if (currentRoute == HomeSections.SEARCH.route) {
-                IconButton(onClick = { /* Handle search action */ }) {
-                    Icon(Icons.Default.Search, contentDescription = "Search")
-                }
-            }
-        },
         colors = TopAppBarDefaults.topAppBarColors()
             .copy(
                 containerColor = Color.White,
@@ -217,7 +215,6 @@ fun CustomTopBar(currentRoute: String, modifier: Modifier = Modifier) {
 }
 
 
-
 val LocalNavAnimatedVisibilityScope = compositionLocalOf<AnimatedVisibilityScope?> { null }
 @OptIn(ExperimentalSharedTransitionApi::class)
 val LocalSharedTransitionScope = compositionLocalOf<SharedTransitionScope?> { null }
@@ -225,8 +222,8 @@ val LocalSharedTransitionScope = compositionLocalOf<SharedTransitionScope?> { nu
 
 @Preview(showBackground = true)
 @Composable
-fun BookShelfAppPreview() {
+fun CustomTopBarPreview() {
     BookShelfTheme {
-        BookShelfApp()
+        CustomTopBar(currentRoute = HomeSections.FEED.route)
     }
 }
