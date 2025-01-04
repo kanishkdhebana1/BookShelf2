@@ -79,7 +79,7 @@ private val DarkColorPalette = BookShelfColors(
     gradient2_3 = listOf(Lavender3, Rose3),
     tornado1 = listOf(Shadow4, Ocean3),
     border = Neutral3,
-    cardColor = Neutral9,
+    cardColor = Neutral10,
     isDark = true
 )
 

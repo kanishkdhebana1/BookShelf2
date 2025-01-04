@@ -11,8 +11,6 @@ data class BookSearchResponse(
     val docs: List<BookItem>
 )
 
-
-
 @Serializable
 data class BookItem(
     @SerialName("cover_i") val coverId: Int? = null,
@@ -22,28 +20,3 @@ data class BookItem(
     @SerialName("publish_year") val firstPublishYear: List<Int>? = null,
 )
 
-@Serializable
-data class VolumeInfo(
-    val title: String,
-    val imageLinks: ImageLinks? = null,
-    val description: String? = null,
-    val authors: List<String>? = null
-)
-
-@Serializable
-data class ImageLinks (
-    @SerialName("thumbnail") val thumbnail: String? = null,
-    @SerialName("extraLarge") val extraLarge: String? = null,
-    @SerialName("large") val large: String? = null,
-    @SerialName("medium") val medium: String? = null
-)
-
-@Serializable
-data class Book(
-    val id: String,
-    val title: String,
-    val thumbnailUrl: String? = null,
-    val selfLink: String,
-    val description: String?,
-    val authors: List<String>?
-)

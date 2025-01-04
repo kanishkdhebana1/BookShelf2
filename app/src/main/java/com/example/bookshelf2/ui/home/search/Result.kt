@@ -1,6 +1,5 @@
 package com.example.bookshelf2.ui.home.search
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -57,7 +56,7 @@ fun Result(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { /* Handle back action here */ }) {
+                    IconButton(onClick = {  }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back",
@@ -77,12 +76,10 @@ fun Result(
         when(val state = searchUiState) {
             is SearchUiState.Loading -> {
                 LoadingScreen(modifier.padding(padding))
-                Log.d("SearchUiState", "Rendering LoadingScreen")
             }
 
             is SearchUiState.Error -> {
                 ErrorScreen(modifier.padding(padding), state)
-                Log.d("SearchUiState", "Rendering ErrorScreen with message: ${state.message}")
             }
 
             is SearchUiState.Success -> {
@@ -106,7 +103,9 @@ fun LoadingScreen(modifier: Modifier) {
         .padding(16.dp),
         contentAlignment = Alignment.Center
     ) {
-        CircularProgressIndicator()
+        CircularProgressIndicator(
+            color = BookShelfTheme.colors.selectedIconBorderFill
+        )
     }
 }
 
@@ -141,7 +140,6 @@ fun ResultScreen(
             Text("No results found.")
         }
 
-        Log.d("SearchUiState", "Rendering No Results")
     } else {
         LazyColumn(
             modifier = modifier,
@@ -151,12 +149,11 @@ fun ResultScreen(
                 end = contentPadding.calculateEndPadding(LayoutDirection.Ltr),
                 bottom = contentPadding.calculateBottomPadding() + 16.dp // Add extra bottom padding here
             ),
-            verticalArrangement = Arrangement.spacedBy(24.dp),
+            verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {
             items(
                 items = books,
-                key = {
-                        book ->
+                key = { book ->
                     book.id
                 }
             ) { book ->
@@ -165,5 +162,6 @@ fun ResultScreen(
                 }
             }
         }
+
     }
 }

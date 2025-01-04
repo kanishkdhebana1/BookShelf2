@@ -35,34 +35,51 @@ import com.example.bookshelf2.R
 import com.example.bookshelf2.model.BookItem
 import com.example.bookshelf2.ui.theme.BookShelfTheme
 
-//@Composable
-//fun BookCardCompact(
-//    book: Book,
-//    context: Context
-//) {
-//    Box() {
-//        Column {
-//            BookListImageItem(
-//                book = book,
-//                modifier = Modifier.fillMaxSize(),
-//                context = context
-//            )
-//
-//            Text(
-//                text = "hello",
-//                style = MaterialTheme.typography.titleLarge,
-//                modifier = Modifier.align(Alignment.CenterHorizontally),
-//                color = Color.Black
-//            )
-//        }
-//    }
-//}
+@Composable
+fun BookCardCompact(
+    book: BookItem,
+    modifier: Modifier = Modifier
+) {
+    val context = LocalContext.current
+
+    Card(
+        onClick = { /*TODO*/ },
+        modifier = modifier
+            .padding(8.dp)
+            .height(190.dp)
+            .width(110.dp),
+        shape = RoundedCornerShape(8.dp),
+        colors = CardDefaults.cardColors()
+            .copy(
+                containerColor = Color.Gray,
+            )
+    ) {
+        Column {
+            BookListImageItem(
+                book = book,
+                modifier = modifier
+                    .fillMaxWidth()
+                    .height(150.dp),
+                context = context
+            )
+
+            Text(
+                text = book.title,
+                style = MaterialTheme.typography.bodySmall,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                color = Color.Black,
+                fontSize = 17.sp,
+                modifier = modifier.align(alignment = Alignment.CenterHorizontally)
+            )
+        }
+    }
+}
 
 @Composable
 fun BookCardWide(
     book: BookItem,
     modifier: Modifier = Modifier
-
 ) {
     val context = LocalContext.current
 
@@ -75,7 +92,7 @@ fun BookCardWide(
         shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors()
             .copy(
-                containerColor = BookShelfTheme.colors.cardColor
+                containerColor = BookShelfTheme.colors.cardColor,
             )
     ) {
         Row(
@@ -136,7 +153,7 @@ fun BookCardWide(
 
 
 @Composable
-private fun BookListImageItem(
+fun BookListImageItem(
     book: BookItem,
     modifier: Modifier = Modifier,
     context: Context
@@ -167,14 +184,28 @@ private fun BookListImageItem(
     }
 }
 
-//@Preview(showBackground = true, showSystemUi = true)
-//@Composable
-//fun BookCardCompactPreview() {
-//    BookCardCompact(
-//        book = Book(9.toString(), "title", "thumbnailUrl", "selfLink", "description", listOf("author")),
-//        context = LocalContext.current
-//    )
-//}
+@Preview(showBackground = true, showSystemUi = true, backgroundColor = 0xde000000)
+@Composable
+fun BookCardCompactPreview() {
+    BookShelfTheme {
+        Row {
+            BookCardCompact(
+                book = BookItem(1, 1, "Big little title", listOf("author"), listOf(2020)),
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            BookCardCompact(
+                book = BookItem(1, 1, "Big little title", listOf("author"), listOf(2020)),
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            BookCardCompact(
+                book = BookItem(1, 1, "Big little title", listOf("author"), listOf(2020)),
+            )
+        }
+
+    }
+}
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
