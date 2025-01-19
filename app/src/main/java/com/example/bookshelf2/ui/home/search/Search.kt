@@ -37,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.bookshelf2.ui.theme.BookShelfTheme
 import com.example.bookshelf2.ui.theme.Shapes
@@ -48,7 +49,7 @@ fun Search(
     onSearch: (String) -> Unit,
     searchViewModel: SearchViewModel,
 ) {
-    val searchUiState by searchViewModel.searchUiState.collectAsState()
+//    val searchUiState by searchViewModel.searchUiState.collectAsState()
 
     var query by remember { mutableStateOf("") }
     var selectedType by remember { mutableStateOf("All") }
@@ -59,13 +60,13 @@ fun Search(
     val sortByOptions = listOf("Most Relevant", "Newest First", "Oldest First")
     val fileTypeOptions = listOf("All", "PDF", "ePub", "Word")
 
-    LaunchedEffect(searchUiState) {
-        // This ensures recomposition happens when the UI state changes (for example after search)
-        if (searchUiState is SearchUiState.Success || searchUiState is SearchUiState.Error) {
-            // Perform any actions on successful state or error state
-            Log.d("Search", "Search Result State: $searchUiState")
-        }
-    }
+//    LaunchedEffect(searchUiState) {
+//        // This ensures recomposition happens when the UI state changes (for example after search)
+//        if (searchUiState is SearchUiState.Success || searchUiState is SearchUiState.Error) {
+//            // Perform any actions on successful state or error state
+//            Log.d("Search", "Search Result State: $searchUiState")
+//        }
+//    }
 
 
     Column(
@@ -95,13 +96,13 @@ fun Search(
             shape = Shapes.small,
             colors = TextFieldDefaults.colors()
                 .copy(
-                    focusedIndicatorColor = Color.DarkGray,
-                    unfocusedIndicatorColor = BookShelfTheme.colors.border,
-                    unfocusedContainerColor = Color.White,
-                    focusedContainerColor = Color.White,
-                    focusedTextColor = Color.Black,
+                    focusedIndicatorColor = BookShelfTheme.colors.highlightedBorder,
+                    unfocusedIndicatorColor = BookShelfTheme.colors.highlightedBorder,
+                    unfocusedContainerColor = BookShelfTheme.colors.uiBackground,
+                    focusedContainerColor = BookShelfTheme.colors.uiBackground,
+                    focusedTextColor = BookShelfTheme.colors.textInteractive,
                     cursorColor = BookShelfTheme.colors.border,
-                    focusedPlaceholderColor = Color.Black,
+                    focusedPlaceholderColor = BookShelfTheme.colors.textPlain,
                     unfocusedPlaceholderColor = Color.DarkGray
                 ),
             keyboardOptions = KeyboardOptions.Default.copy(
@@ -182,18 +183,20 @@ fun DropdownSelector(
                         .copy(
                             focusedLabelColor = BookShelfTheme.colors.selectedIconBorderFill,
                             unfocusedLabelColor = BookShelfTheme.colors.selectedIconBorderFill,
-                            focusedTrailingIconColor = BookShelfTheme.colors.border,
+                            focusedTrailingIconColor = BookShelfTheme.colors.highlightedBorder,
                             unfocusedTrailingIconColor = BookShelfTheme.colors.border,
-                            focusedIndicatorColor = Color.DarkGray,
+                            focusedIndicatorColor = BookShelfTheme.colors.highlightedBorder,
                             unfocusedIndicatorColor = BookShelfTheme.colors.border,
                         ),
-                    textStyle = TextStyle(color = Color.Black)
+                    textStyle = TextStyle(
+                        color = BookShelfTheme.colors.textPlain
+                    )
                 )
 
                 ExposedDropdownMenu(
                     expanded = expanded,
                     onDismissRequest = { expanded = !expanded },
-                    containerColor = Color.White,
+                    containerColor = BookShelfTheme.colors.cardColor,
                     shape = Shapes.small,
                     border = BorderStroke(width = 1.dp, color = Color.Gray),
                 ) {
@@ -202,7 +205,7 @@ fun DropdownSelector(
                             text = {
                                 Text(
                                     option,
-                                    color = Color.DarkGray
+                                    color = BookShelfTheme.colors.textPlain
                             )},
                             onClick = {
                                 onOptionSelected(option)
@@ -217,4 +220,33 @@ fun DropdownSelector(
         Spacer(modifier = Modifier.weight(1f))
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+fun SearchPreview() {
+    BookShelfTheme() {
+        DropdownSelector(
+            label = "hello",
+            options = listOf("All", "Books", "Articles", "Journals"),
+            selectedOption = "All",
+            onOptionSelected = {  },
+            boxWeight = 2f
+        )
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000, showSystemUi = true)
+@Composable
+fun SearchPreviewDark() {
+    BookShelfTheme(darkTheme = true) {
+        DropdownSelector(
+            label = "hello",
+            options = listOf("All", "Books", "Articles", "Journals"),
+            selectedOption = "All",
+            onOptionSelected = {  },
+            boxWeight = 2f
+        )
+    }
+}
+
 

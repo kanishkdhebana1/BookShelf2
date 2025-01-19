@@ -15,9 +15,8 @@ import androidx.navigation.compose.rememberNavController
 
 object MainDestinations {
     const val HOME_ROUTE = "Home"
-    const val BOOK_DETAIL_ROUTE = "Book"
+    const val BOOK_DETAIL_ROUTE = "BookDetails"
     const val BOOK_ID_KEY = "BookId"
-    const val ORIGIN = "Origin"
     const val RESULT = "Result"
 }
 
@@ -52,10 +51,10 @@ class BookShelfNavController(
         }
     }
 
-    fun navigateToBookDetail(bookId: Long, origin: String, from: NavBackStackEntry) {
-        // In order to discard duplicated navigation events, we check the Lifecycle
+    fun navigateToBookDetail(bookKey: String, from: NavBackStackEntry) {
         if (from.lifecycleIsResumed()) {
-            navController.navigate("${MainDestinations.BOOK_DETAIL_ROUTE}/$bookId?origin=$origin")
+            val sanitizedKey = bookKey.removePrefix("/")
+            navController.navigate("${MainDestinations.BOOK_DETAIL_ROUTE}/$sanitizedKey")
         }
     }
 

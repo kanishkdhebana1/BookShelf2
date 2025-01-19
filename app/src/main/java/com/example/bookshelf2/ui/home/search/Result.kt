@@ -26,6 +26,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.example.bookshelf2.model.BookItem
@@ -40,7 +41,9 @@ import com.example.bookshelf2.ui.theme.BookShelfTheme
 fun Result(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
-    searchViewModel: SearchViewModel
+    searchViewModel: SearchViewModel,
+    onBookSelect: (String) -> Unit,
+    onBackPressed: () -> Unit
 ) {
     val searchUiState by searchViewModel.searchUiState.collectAsState()
 
@@ -56,19 +59,19 @@ fun Result(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = {  }) {
+                    IconButton(onClick = onBackPressed ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back",
-                            tint = Color.DarkGray
+                            tint = BookShelfTheme.colors.iconInteractive
                         )
                     }
                 },
                 modifier = modifier,
                 colors = TopAppBarDefaults.topAppBarColors()
                     .copy(
-                        containerColor = Color.White,
-                        scrolledContainerColor = Color.White
+                        containerColor = BookShelfTheme.colors.uiBackground,
+                        scrolledContainerColor = BookShelfTheme.colors.uiBackground
                     )
             )
         }
@@ -88,7 +91,9 @@ fun Result(
                 ResultScreen(
                     modifier = modifier.padding(padding),
                     books = books,
-                    contentPadding = contentPadding
+                    contentPadding = contentPadding,
+                    searchViewModel = searchViewModel,
+                    onBookSelect =  onBookSelect
                 )
             }
         }
@@ -128,7 +133,9 @@ fun ErrorScreen(modifier: Modifier, searchUiState: SearchUiState.Error) {
 fun ResultScreen(
     modifier: Modifier,
     books: List<BookItem>,
-    contentPadding: PaddingValues
+    contentPadding: PaddingValues,
+    searchViewModel: SearchViewModel,
+    onBookSelect: (String) -> Unit,
 ) {
     if (books.isEmpty()) {
         Box(
@@ -158,10 +165,20 @@ fun ResultScreen(
                 }
             ) { book ->
                 Column {
-                    BookCardWide(book = book)
+                    BookCardWide(
+                        book = book,
+                        onClick = {
+                            book.key?.let { book.coverId?.let { it1 ->
+                                searchViewModel.updateBookKey(it,
+                                    it1
+                                )
+                            } }
+                            book.key?.let { onBookSelect(it) }
+
+                        }
+                    )
                 }
             }
         }
-
     }
 }

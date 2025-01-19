@@ -20,7 +20,7 @@ import com.example.bookshelf2.ui.home.HomeViewModel
 
 @Composable
 fun Feed(
-    onBookClick: (Long, String) -> Unit,
+    //onBookClick: (Long, String) -> Unit,
     modifier: Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp)
     ) {
@@ -62,7 +62,7 @@ fun Feed(
             }
         ) { book ->
             Column {
-                BookCardWide(book = book)
+                BookCardWide(book = book, onClick = {  })
             }
         }
     }

@@ -34,15 +34,15 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
-import com.example.bookshelf2.ui.bookdetail.BookDetail
-import com.example.bookshelf2.ui.bookdetail.nonSpatialExpressiveSpring
-import com.example.bookshelf2.ui.bookdetail.spatialExpressiveSpring
 import com.example.bookshelf2.ui.components.BookShelfScaffold
 import com.example.bookshelf2.ui.components.BookShelfSnackbar
 import com.example.bookshelf2.ui.components.rememberBookShelfScaffoldState
 import com.example.bookshelf2.ui.home.BookShelfBottomBar
 import com.example.bookshelf2.ui.home.HomeSections
 import com.example.bookshelf2.ui.home.addHomeGraph
+import com.example.bookshelf2.ui.home.bookdetails.BookDetails
+import com.example.bookshelf2.ui.home.bookdetails.nonSpatialExpressiveSpring
+import com.example.bookshelf2.ui.home.bookdetails.spatialExpressiveSpring
 import com.example.bookshelf2.ui.home.composableWithCompositionLocal
 import com.example.bookshelf2.ui.home.search.Result
 import com.example.bookshelf2.ui.home.search.SearchViewModel
@@ -69,7 +69,7 @@ fun BookShelfApp() {
                     ) {
                         MainContainer(
                             modifier = Modifier,
-                            onBookSelected = bookShelfNavController::navigateToBookDetail,
+                            //onBookSelected = {  }, //bookShelfNavController::navigateToBookDetail,
                             onSearchClicked = bookShelfNavController::navigateToResult,
                             searchViewModel = searchViewModel
                         )
@@ -81,30 +81,62 @@ fun BookShelfApp() {
                             navArgument("query") { type = NavType.StringType }
                         )
                     ) {
-                        Result(searchViewModel = searchViewModel)
+                        Result(
+                            searchViewModel = searchViewModel,
+                            onBookSelect = { bookKey ->
+                                bookShelfNavController.navigateToBookDetail(bookKey, it)
+                            },
+                            onBackPressed = { bookShelfNavController.upPress() }
+                        )
                     }
 
                     composableWithCompositionLocal(
-                        route = "${MainDestinations.BOOK_DETAIL_ROUTE}/" +
-                                "{${MainDestinations.BOOK_ID_KEY}}" +
-                                "?origin={${MainDestinations.ORIGIN}}",
-
+                        route = "${MainDestinations.BOOK_DETAIL_ROUTE}/works/{${MainDestinations.BOOK_ID_KEY}}",
                         arguments = listOf(
                             navArgument(MainDestinations.BOOK_ID_KEY) {
-                                type = NavType.LongType
+                                type = NavType.StringType
                             }
-                        ),
-                    ) { backStackEntry ->
-                        val arguments = requireNotNull(backStackEntry.arguments)
-                        val bookId = arguments.getLong(MainDestinations.BOOK_ID_KEY)
-                        val origin = arguments.getString(MainDestinations.ORIGIN)
-
-                        BookDetail(
-                            bookId = bookId,
-                            origin = origin ?: "",
-                            upPress = bookShelfNavController::upPress
+                        )
+                    ) {
+                        BookDetails(
+                            searchViewModel = searchViewModel,
+                            onBackPressed = { bookShelfNavController.upPress() }
                         )
                     }
+
+//                    composableWithCompositionLocal(
+//                        route = "${MainDestinations.BOOK_DETAIL_ROUTE}/{}",
+//                        arguments = listOf(
+//                            navArgument("coverId") { type = NavType.IntType }
+//                        )
+//                    ) {
+//                        BookDetails(
+//                            searchViewModel = searchViewModel,
+//                            coverId = it.arguments?.getInt("coverId") ?: 0,
+//                        )
+//                    }
+
+//                    composableWithCompositionLocal(
+//                        route = "${MainDestinations.BOOK_DETAIL_ROUTE}/" +
+//                                "{${MainDestinations.BOOK_ID_KEY}}" +
+//                                "?origin={${MainDestinations.ORIGIN}}",
+//
+//                        arguments = listOf(
+//                            navArgument(MainDestinations.BOOK_ID_KEY) {
+//                                type = NavType.LongType
+//                            }
+//                        ),
+//                    ) { backStackEntry ->
+//                        val arguments = requireNotNull(backStackEntry.arguments)
+//                        val bookId = arguments.getLong(MainDestinations.BOOK_ID_KEY)
+//                        val origin = arguments.getString(MainDestinations.ORIGIN)
+//
+//                        BookDetails(
+//                            bookId = bookId,
+//                            origin = origin ?: "",
+//                            upPress = bookShelfNavController::upPress
+//                        )
+//                    }
                 }
             }
         }
@@ -115,7 +147,7 @@ fun BookShelfApp() {
 @Composable
 fun MainContainer(
     modifier: Modifier = Modifier,
-    onBookSelected: (Long, String, NavBackStackEntry) -> Unit,
+    //onBookSelected: (Long, String, NavBackStackEntry) -> Unit,
     searchViewModel: SearchViewModel,
     onSearchClicked: (String, NavBackStackEntry) -> Unit
 ) {
@@ -177,7 +209,7 @@ fun MainContainer(
             startDestination = HomeSections.FEED.route
         ) {
             addHomeGraph(
-                onBookSelected = onBookSelected,
+                //onBookSelected = onBookSelected,
                 onSearchClick = onSearchClicked,
                 searchViewModel = searchViewModel,
                 modifier = Modifier
@@ -208,8 +240,8 @@ fun CustomTopBar(currentRoute: String, modifier: Modifier = Modifier) {
         modifier = modifier,
         colors = TopAppBarDefaults.topAppBarColors()
             .copy(
-                containerColor = Color.White,
-                scrolledContainerColor = Color.White
+                containerColor = BookShelfTheme.colors.uiBackground,
+                scrolledContainerColor = BookShelfTheme.colors.uiBackground
             )
     )
 }
@@ -224,6 +256,14 @@ val LocalSharedTransitionScope = compositionLocalOf<SharedTransitionScope?> { nu
 @Composable
 fun CustomTopBarPreview() {
     BookShelfTheme {
+        CustomTopBar(currentRoute = HomeSections.FEED.route)
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun CustomTopBarPreviewDark() {
+    BookShelfTheme(darkTheme = true) {
         CustomTopBar(currentRoute = HomeSections.FEED.route)
     }
 }

@@ -1,5 +1,6 @@
 package com.example.bookshelf2.network
 
+import com.example.bookshelf2.model.BookDetailsResponse
 import com.example.bookshelf2.model.BookSearchResponse
 import retrofit2.Call
 import retrofit2.http.GET
@@ -14,8 +15,10 @@ interface BookShelfApiService {
         @Query("limit") limit: Int = 20
     ): BookSearchResponse
 
-    @GET("works/{id}.json")
-    suspend fun getBookDetails(
-        @Path("id") id: Int
-    ): BookSearchResponse
+    @GET("work/{key}.json")
+    suspend fun searchBookDetails(
+        @Path("key") key: String
+    ): BookDetailsResponse
+
+
 }

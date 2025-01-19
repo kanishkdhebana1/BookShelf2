@@ -18,7 +18,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            BookShelfApp()
+            BookShelfTheme(darkTheme = true) {
+                BookShelfApp()
+            }
         }
     }
 }

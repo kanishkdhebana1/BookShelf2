@@ -12,6 +12,11 @@
   the License.
   -->
 <resources>
+    <style name="Theme.BookShelf" parent="Theme.Material.DayNight.NoActionBar">
+        <item name="android:colorPrimary">#ffc30060</item>
+        <item name="android:colorAccent">#ffc30060</item>
+        <item name="android:dialogTheme">@style/Theme.DialogFullScreen</item>
+    </style>
 
     <style name="Theme.Material.DayNight.NoActionBar" parent="@android:style/Theme.Material.NoActionBar" />
 

@@ -1,6 +1,7 @@
 package com.example.bookshelf2.ui.home.search
 
 import android.util.Log
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -9,6 +10,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.bookshelf2.BookshelfApplication
 import com.example.bookshelf2.data.BookshelfRepository
+import com.example.bookshelf2.model.BookDetailsResponse
 import com.example.bookshelf2.model.BookItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,6 +24,12 @@ sealed class SearchUiState {
     data class Error(val message: String) : SearchUiState()
 }
 
+sealed class DetailsUiState {
+    data object Loading : DetailsUiState()
+    data class Success(val book: BookDetailsResponse) : DetailsUiState()
+    data class Error(val message: String) : DetailsUiState()
+}
+
 
 
 class SearchViewModel(
@@ -31,7 +39,15 @@ class SearchViewModel(
     private val _searchUiState = MutableStateFlow<SearchUiState>(SearchUiState.Loading)
     val searchUiState: StateFlow<SearchUiState> = _searchUiState
 
+    private val _detailsUiState = MutableStateFlow<DetailsUiState>(DetailsUiState.Loading)
+    val detailsUiState: StateFlow<DetailsUiState> = _detailsUiState
+
     private var _searchTerm = mutableStateOf("")
+    private var _bookKey = mutableStateOf("")
+    private var _coverId = mutableIntStateOf(0)
+    val coverId: Int
+        get() = _coverId.intValue
+
 
     private var lastSearchTime = System.currentTimeMillis()
 
@@ -51,6 +67,12 @@ class SearchViewModel(
         searchBooks(query)
     }
 
+    fun updateBookKey(newBookKey: String, newCoverId: Int) {
+        _bookKey.value = newBookKey
+        _coverId.intValue = newCoverId
+        searchBookDetails(_bookKey.value)
+    }
+
 
     private  fun searchBooks(query: String) {
         _searchUiState.value = SearchUiState.Loading
@@ -68,7 +90,8 @@ class SearchViewModel(
                         id = uniqueKey,
                         title = bookItem.title,
                         authors = bookItem.authors,
-                        firstPublishYear = bookItem.firstPublishYear
+                        firstPublishYear = bookItem.firstPublishYear,
+                        key = bookItem.key
                     )
                 }
 
@@ -78,6 +101,25 @@ class SearchViewModel(
                 // Handle error if necessary
                 _searchUiState.value = SearchUiState.Error(exception.message ?: "Unknown error")
                 Log.d("HOLLLLAAAA", "Error: ${exception.message}")
+            }
+        }
+    }
+
+
+    private  fun searchBookDetails(key: String) {
+        _detailsUiState.value = DetailsUiState.Loading
+        val extractedKey = key.substringAfterLast("/")
+
+        viewModelScope.launch {
+            try {
+                val response = bookshelfRepository.searchBookDetails(extractedKey)
+                _detailsUiState.value = DetailsUiState.Success(response)
+
+                Log.d("SearchViewModel", response.toString())
+
+            } catch (exception: Exception) {
+                _detailsUiState.value = DetailsUiState.Error(exception.message ?: "Unknown error")
+                Log.e("SearchViewModel", "Error fetching book details", exception)
             }
         }
     }

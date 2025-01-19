@@ -1,6 +1,7 @@
 package com.example.bookshelf2.ui.components
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -41,6 +42,7 @@ fun BookCardCompact(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
+    val coverId = book.coverId
 
     Card(
         onClick = { /*TODO*/ },
@@ -56,11 +58,12 @@ fun BookCardCompact(
     ) {
         Column {
             BookListImageItem(
-                book = book,
+                coverId = coverId,
                 modifier = modifier
                     .fillMaxWidth()
                     .height(150.dp),
-                context = context
+                context = context,
+                size = 'M'
             )
 
             Text(
@@ -79,12 +82,14 @@ fun BookCardCompact(
 @Composable
 fun BookCardWide(
     book: BookItem,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
 ) {
     val context = LocalContext.current
+    val coverId = book.coverId
 
     Card(
-        onClick = { /*TODO*/ },
+        onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
             .height(125.dp)
@@ -99,11 +104,12 @@ fun BookCardWide(
             modifier = modifier.fillMaxSize()
         ) {
             BookListImageItem(
-                book = book,
-                context = context,
+                coverId = coverId,
                 modifier = modifier
                     .width(95.dp)
-                    .fillMaxHeight()
+                    .fillMaxHeight(),
+                context = context,
+                size = 'M'
             )
 
             Column(
@@ -117,7 +123,7 @@ fun BookCardWide(
                     style = MaterialTheme.typography.titleLarge,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
-                    color = Color.Black,
+                    color = BookShelfTheme.colors.textPlain,
                     fontSize = 20.sp
                 )
 
@@ -130,7 +136,7 @@ fun BookCardWide(
                     style = MaterialTheme.typography.bodyMedium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    color = Color.DarkGray,
+                    color = BookShelfTheme.colors.textPlain,
                     fontSize = 15.sp,
                     modifier = modifier.padding(bottom = 8.dp)
                 )
@@ -154,63 +160,96 @@ fun BookCardWide(
 
 @Composable
 fun BookListImageItem(
-    book: BookItem,
+    coverId: Int?,
     modifier: Modifier = Modifier,
-    context: Context
+    context: Context,
+    size: Char
 ) {
-
-    val thumbnailUrl = "https://covers.openlibrary.org/b/id/${book.coverId}-M.jpg"
-
+    val thumbnailUrl = "https://covers.openlibrary.org/b/id/${coverId}-${size}.jpg"
+    Log.d("BookListImageItem", coverId.toString())
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(8.dp))
             .background(MaterialTheme.colorScheme.surface)
+            .fillMaxSize()
     ) {
         AsyncImage(
             model = ImageRequest.Builder(context)
                 .data(thumbnailUrl)
                 .crossfade(true)
                 .build(),
-            contentDescription = book.title,
+            contentDescription = "",
             alignment = Alignment.Center,
-            contentScale = ContentScale.FillWidth,
+            contentScale = ContentScale.FillBounds,
             placeholder = painterResource(id = R.drawable.loading),
             error = painterResource(id = R.drawable.placeholder_book),
             modifier = Modifier
                 .matchParentSize()
                 .background(Color.White)
-
         )
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true, backgroundColor = 0xde000000)
+
+@Preview(showBackground = true)
+@Composable
+fun BookCardWidePreview() {
+    BookShelfTheme {
+        BookCardWide(book = BookItem(1, 1, "title", key = "", listOf("author"), listOf(2020)), onClick = {  })
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun BookCardWidePreviewDark() {
+    BookShelfTheme(darkTheme = true) {
+        BookCardWide(book = BookItem(1, 1, "title", key = "", listOf("author"), listOf(2020)), onClick = {  })
+    }
+}
+
+
+@Preview(showBackground = true)
 @Composable
 fun BookCardCompactPreview() {
     BookShelfTheme {
         Row {
             BookCardCompact(
-                book = BookItem(1, 1, "Big little title", listOf("author"), listOf(2020)),
+                book = BookItem(1, 1, "Big little title", key = "",listOf("author"), listOf(2020)),
             )
             Spacer(modifier = Modifier.weight(1f))
             BookCardCompact(
-                book = BookItem(1, 1, "Big little title", listOf("author"), listOf(2020)),
+                book = BookItem(1, 1, "Big little title", key = "", listOf("author"), listOf(2020)),
             )
 
             Spacer(modifier = Modifier.weight(1f))
 
             BookCardCompact(
-                book = BookItem(1, 1, "Big little title", listOf("author"), listOf(2020)),
+                book = BookItem(1, 1, "Big little title", key = "", listOf("author"), listOf(2020))
             )
         }
 
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
+@Preview(showBackground = true)
 @Composable
-fun BookCardWidePreview() {
-    BookShelfTheme {
-        BookCardWide(book = BookItem(1, 1, "title", listOf("author"), listOf(2020)))
+fun BookCardCompactPreviewDark() {
+    BookShelfTheme(darkTheme = true) {
+        Row {
+            BookCardCompact(
+                book = BookItem(1, 1, "Big little title", key = "",listOf("author"), listOf(2020)),
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            BookCardCompact(
+                book = BookItem(1, 1, "Big little title", key = "", listOf("author"), listOf(2020)),
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            BookCardCompact(
+                book = BookItem(1, 1, "Big little title", key = "", listOf("author"), listOf(2020))
+            )
+        }
+
     }
 }

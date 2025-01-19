@@ -62,8 +62,8 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.example.bookshelf2.LocalNavAnimatedVisibilityScope
 import com.example.bookshelf2.R
-import com.example.bookshelf2.ui.bookdetail.nonSpatialExpressiveSpring
-import com.example.bookshelf2.ui.bookdetail.spatialExpressiveSpring
+import com.example.bookshelf2.ui.home.bookdetails.nonSpatialExpressiveSpring
+import com.example.bookshelf2.ui.home.bookdetails.spatialExpressiveSpring
 import com.example.bookshelf2.ui.components.BookShelfSurface
 import com.example.bookshelf2.ui.home.feed.Feed
 import com.example.bookshelf2.ui.home.library.Library
@@ -120,14 +120,14 @@ fun NavGraphBuilder.composableWithCompositionLocal(
 }
 
 fun NavGraphBuilder.addHomeGraph(
-    onBookSelected: (Long, String, NavBackStackEntry) -> Unit,
+    //onBookSelected: (Long, String, NavBackStackEntry) -> Unit,
     onSearchClick: (String, NavBackStackEntry) -> Unit,
     searchViewModel: SearchViewModel,
     modifier: Modifier = Modifier
 ) {
     composable(HomeSections.FEED.route) { from ->
         Feed(
-            onBookClick = { id, origin -> onBookSelected(id, origin, from) },
+            //onBookClick = {  },
             modifier = modifier
         )
     }
@@ -140,12 +140,14 @@ fun NavGraphBuilder.addHomeGraph(
     }
     composable(HomeSections.LIBRARY.route) { from ->
         Library(
-            onBookClick = { id, origin -> onBookSelected(id, origin, from) },
+            //onBookClick = { id, origin -> onBookSelected(id, origin, from) },
             modifier
         )
     }
     composable(HomeSections.PROFILE.route) {
-        Profile(modifier)
+        Profile(
+            modifier = modifier,
+        )
     }
 }
 
@@ -166,7 +168,7 @@ fun BookShelfBottomBar(
     modifier: Modifier = Modifier,
     tabs: Array<HomeSections>,
     currentRoute: String,
-    color: Color = BookShelfTheme.colors.iconPrimary,
+    color: Color = BookShelfTheme.colors.bottomBarColor,
     contentColor: Color = BookShelfTheme.colors.iconInteractive,
     navigateToRoute: (String) -> Unit
 ) {
@@ -424,6 +426,18 @@ private val BottomNavigationItemPadding = Modifier.padding(horizontal = 16.dp, v
 @Composable
 private fun BookShelfBottomNavPreview() {
     BookShelfTheme {
+        BookShelfBottomBar(
+            tabs = HomeSections.entries.toTypedArray(),
+            currentRoute = "home/feed",
+            navigateToRoute = { }
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun BookShelfBottomNavPreviewDark() {
+    BookShelfTheme(darkTheme = true) {
         BookShelfBottomBar(
             tabs = HomeSections.entries.toTypedArray(),
             currentRoute = "home/feed",
