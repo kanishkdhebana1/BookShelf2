@@ -57,7 +57,11 @@ private val LightColorPalette = BookShelfColors(
     bottomBarColor = Neutral9,
     textPlain = Neutral7,
     highlightedBorder = Neutral7,
-    selectedBorderFill = Neutral7
+    selectedBorderFill = Neutral1,
+    toggleBorderOff = Neutral7,
+    toggleBorderOn = FunctionalRed5,
+    toggleFillOff = Neutral0,
+    toggleFillOn = FunctionalRed4
 )
 
 private val DarkColorPalette = BookShelfColors(
@@ -93,7 +97,11 @@ private val DarkColorPalette = BookShelfColors(
     bottomBarColor = Color.Black,
     textPlain = Neutral1,
     highlightedBorder = Neutral1,
-    selectedBorderFill = Neutral1
+    selectedBorderFill = Neutral1,
+    toggleBorderOff = Neutral0,
+    toggleBorderOn = FunctionalRed5,
+    toggleFillOff = Neutral7,
+    toggleFillOn = FunctionalRed4
 )
 
 @Composable
@@ -159,7 +167,11 @@ data class BookShelfColors(
     val bottomBarColor: Color,
     val textPlain: Color,
     val highlightedBorder: Color,
-    val selectedBorderFill: Color
+    val selectedBorderFill: Color,
+    val toggleBorderOff: Color,
+    val toggleBorderOn: Color,
+    val toggleFillOff: Color,
+    val toggleFillOn: Color
 )
 
 @Composable

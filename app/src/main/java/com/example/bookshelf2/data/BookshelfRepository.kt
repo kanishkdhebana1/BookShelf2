@@ -6,15 +6,15 @@ import com.example.bookshelf2.network.BookShelfApiService
 import retrofit2.Call
 
 interface BookshelfRepository {
-    suspend fun searchBooks(query: String): BookSearchResponse
+    suspend fun searchBooks(query: String, page: Int, limit: Int): BookSearchResponse
     suspend fun searchBookDetails(key: String): BookDetailsResponse
 }
 
 class NetworkBookShelfRepository(
     private val bookShelfApiService: BookShelfApiService
 ): BookshelfRepository {
-    override suspend fun searchBooks(query: String): BookSearchResponse =
-        bookShelfApiService.searchBooks(query, 1)
+    override suspend fun searchBooks(query: String, page: Int, limit: Int): BookSearchResponse =
+        bookShelfApiService.searchBooks(query, page = page, limit = limit)
 
     override suspend fun searchBookDetails(key: String): BookDetailsResponse =
         bookShelfApiService.searchBookDetails(key)

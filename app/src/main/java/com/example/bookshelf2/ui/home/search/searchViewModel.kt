@@ -80,7 +80,7 @@ class SearchViewModel(
 
         viewModelScope.launch {
             try {
-                val response = bookshelfRepository.searchBooks(query)
+                val response = bookshelfRepository.searchBooks(query = query, page = 1, limit = 1000)
 
                 val books: List<BookItem> = response.docs.map { bookItem ->
                     val uniqueKey = UUID.randomUUID().toString().hashCode()

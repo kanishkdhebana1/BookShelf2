@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -19,6 +21,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -39,6 +42,7 @@ fun Profile(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(80.dp)
+                .clip(RoundedCornerShape(8.dp))
                 .background(color = BookShelfTheme.colors.cardColor)
         ) {
             Row(
@@ -56,15 +60,15 @@ fun Profile(
                 Spacer(modifier = Modifier.weight(1f))
 
                 Switch(
-                    checked = isDarkMode,
+                    checked = true,
                     onCheckedChange = onToggleTheme,
                     colors = SwitchDefaults.colors(
-                        checkedBorderColor = Color.Black,
-                       // checkedThumbColor = Color.White,
-                       // checkedTrackColor = BookShelfTheme.colors.textInteractive,
-                        uncheckedBorderColor = BookShelfTheme.colors.iconSecondary,
-                        uncheckedThumbColor = BookShelfTheme.colors.iconSecondary,
-                        uncheckedTrackColor = BookShelfTheme.colors.textInteractive
+                        checkedBorderColor = Color.Transparent,
+                        checkedThumbColor = BookShelfTheme.colors.toggleFillOn,
+                        checkedTrackColor = BookShelfTheme.colors.toggleBorderOn,
+                        uncheckedBorderColor = BookShelfTheme.colors.toggleBorderOff,
+                        uncheckedThumbColor = BookShelfTheme.colors.toggleBorderOff,
+                        uncheckedTrackColor = BookShelfTheme.colors.toggleFillOff
                     )
                 )
             }
@@ -72,15 +76,40 @@ fun Profile(
     }
 }
 
-@Preview(showSystemUi = true)
+@Preview()
 @Composable
-fun ProfilePreview() {
-    val isDarkMode by remember { mutableStateOf(true) }
+fun SwitchPreviewDark() {
+    BookShelfTheme(darkTheme = true) {
+        Switch(
+            checked = true,
+            onCheckedChange = {  },
+            colors = SwitchDefaults.colors(
+                checkedBorderColor = Color.Transparent,
+                checkedThumbColor = BookShelfTheme.colors.toggleFillOn,
+                checkedTrackColor = BookShelfTheme.colors.toggleBorderOn,
+                uncheckedBorderColor = BookShelfTheme.colors.toggleBorderOff,
+                uncheckedThumbColor = BookShelfTheme.colors.toggleBorderOff,
+                uncheckedTrackColor = BookShelfTheme.colors.toggleFillOff
+            )
+        )
+    }
+}
 
-    BookShelfTheme(darkTheme = isDarkMode) {
-        Profile(
-            isDarkMode = isDarkMode,
-            modifier = Modifier
+@Preview()
+@Composable
+fun SwitchPreview() {
+    BookShelfTheme() {
+        Switch(
+            checked = false,
+            onCheckedChange = {  },
+            colors = SwitchDefaults.colors(
+                checkedBorderColor = Color.Transparent,
+                checkedThumbColor = BookShelfTheme.colors.toggleFillOn,
+                checkedTrackColor = BookShelfTheme.colors.toggleBorderOn,
+                uncheckedBorderColor = BookShelfTheme.colors.toggleBorderOff,
+                uncheckedThumbColor = BookShelfTheme.colors.toggleBorderOff,
+                uncheckedTrackColor = BookShelfTheme.colors.toggleFillOff
+            )
         )
     }
 }

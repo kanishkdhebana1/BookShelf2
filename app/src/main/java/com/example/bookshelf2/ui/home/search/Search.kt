@@ -60,15 +60,6 @@ fun Search(
     val sortByOptions = listOf("Most Relevant", "Newest First", "Oldest First")
     val fileTypeOptions = listOf("All", "PDF", "ePub", "Word")
 
-//    LaunchedEffect(searchUiState) {
-//        // This ensures recomposition happens when the UI state changes (for example after search)
-//        if (searchUiState is SearchUiState.Success || searchUiState is SearchUiState.Error) {
-//            // Perform any actions on successful state or error state
-//            Log.d("Search", "Search Result State: $searchUiState")
-//        }
-//    }
-
-
     Column(
         modifier = modifier
             .fillMaxSize()

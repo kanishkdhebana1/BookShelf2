@@ -84,6 +84,8 @@ val Neutral0 = Color(0xffffffff)
 
 val FunctionalRed = Color(0xffd00036)
 val FunctionalRed2 = Color(0xFFEE0D27)
+val FunctionalRed4 = Color(0xFFFF475C)
+val FunctionalRed5 = Color(0x8DFF475C)
 val FunctionalRedDark = Color(0xffea6d7e)
 val FunctionalRed3 = Color(0xFFF77972)
 val FunctionalGreen = Color(0xff52c41a)

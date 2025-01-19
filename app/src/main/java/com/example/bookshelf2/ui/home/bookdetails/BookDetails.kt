@@ -193,7 +193,7 @@ fun BookDetailsScreen(
         )
 
         Text(
-            text = "Hello",
+            text = "-",
             //text = book.authors?.joinToString(", ") ?: "Unknown Author",
             modifier = modifier
                 .padding(top = 15.dp),

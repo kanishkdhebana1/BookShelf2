@@ -27,56 +27,92 @@ class HomeViewModel(
     private val bookshelfRepository: BookshelfRepository
 ): ViewModel() {
 
-    var bookshelfUiState: BookshelfUiState by mutableStateOf(BookshelfUiState.Loading)
+    var newArrivalsUiState: BookshelfUiState by mutableStateOf(BookshelfUiState.Loading)
         private set
 
-    private var _searchTerm = mutableStateOf("")
-    val searchTerm: State<String> = _searchTerm
+    var topRatedUiState: BookshelfUiState by mutableStateOf(BookshelfUiState.Loading)
+        private set
 
-    private var lastSearchTime = System.currentTimeMillis()
+    var trendingUiState: BookshelfUiState by mutableStateOf(BookshelfUiState.Loading)
+        private set
 
-    fun updateSearchTerm(newTerm: String) {
-        _searchTerm.value = newTerm
-        debounceSearch(newTerm)
+    init {
+        fetchNewArrivals()
+        fetchTopRated()
+        fetchTrending()
     }
 
-    private fun debounceSearch(query: String) {
-        val currentTime = System.currentTimeMillis()
-
-        if (currentTime - lastSearchTime < 300) {
-            return  // Avoid making the request if the last request was too recent
+    private fun fetchNewArrivals() {
+        fetchBooks("new+arrivals") { result ->
+            newArrivalsUiState = result
         }
-
-        lastSearchTime = currentTime
-        getBooks(query)
     }
 
-    private fun getBooks(query: String) {
+    private fun fetchTopRated() {
+        fetchBooks("top+rated") { result ->
+            topRatedUiState = result
+        }
+    }
+
+    private fun fetchTrending() {
+        fetchBooks("trending") { result ->
+            trendingUiState = result
+        }
+    }
+
+    private fun fetchBooks(query: String, updateUiState: (BookshelfUiState) -> Unit) {
         viewModelScope.launch {
-            bookshelfUiState = BookshelfUiState.Loading
-            bookshelfUiState = try {
-                val response = bookshelfRepository.searchBooks(query)
+            updateUiState(BookshelfUiState.Loading)
+            updateUiState(
+                try {
+                    val response = bookshelfRepository.searchBooks(query = query, page = 1, limit = 15)
+                    val books = response.docs.map { bookItem ->
+                        val uniqueKey = UUID.randomUUID().toString().hashCode()
 
-                val books: List<BookItem> = response.docs.map { bookItem ->
-                    val uniqueKey = UUID.randomUUID().toString().hashCode()
-
-                     BookItem(
-                         coverId = bookItem.coverId,
-                         id = uniqueKey,
-                         title = bookItem.title,
-                         authors = bookItem.authors,
-                         firstPublishYear = bookItem.firstPublishYear
-                    )
+                        BookItem(
+                            coverId = bookItem.coverId,
+                            id = uniqueKey,
+                            title = bookItem.title,
+                            authors = bookItem.authors,
+                            firstPublishYear = bookItem.firstPublishYear
+                        )
+                    }
+                    BookshelfUiState.Success(books)
+                } catch (e: IOException) {
+                    BookshelfUiState.Error
+                } catch (e: HttpException) {
+                    BookshelfUiState.Error
                 }
-
-                BookshelfUiState.Success(books)
-            } catch (e: IOException) {
-                BookshelfUiState.Error
-            } catch (e: HttpException) {
-                BookshelfUiState.Error
-            }
+            )
         }
     }
+
+//    private fun getBooks(query: String) {
+//        viewModelScope.launch {
+//            bookshelfUiState = BookshelfUiState.Loading
+//            bookshelfUiState = try {
+//                val response = bookshelfRepository.searchBooks(query)
+//
+//                val books: List<BookItem> = response.docs.map { bookItem ->
+//                    val uniqueKey = UUID.randomUUID().toString().hashCode()
+//
+//                     BookItem(
+//                         coverId = bookItem.coverId,
+//                         id = uniqueKey,
+//                         title = bookItem.title,
+//                         authors = bookItem.authors,
+//                         firstPublishYear = bookItem.firstPublishYear
+//                    )
+//                }
+//
+//                BookshelfUiState.Success(books)
+//            } catch (e: IOException) {
+//                BookshelfUiState.Error
+//            } catch (e: HttpException) {
+//                BookshelfUiState.Error
+//            }
+//        }
+//    }
 
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {

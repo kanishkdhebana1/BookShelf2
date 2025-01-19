@@ -127,7 +127,6 @@ fun NavGraphBuilder.addHomeGraph(
 ) {
     composable(HomeSections.FEED.route) { from ->
         Feed(
-            //onBookClick = {  },
             modifier = modifier
         )
     }

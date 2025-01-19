@@ -47,13 +47,12 @@ fun BookCardCompact(
     Card(
         onClick = { /*TODO*/ },
         modifier = modifier
-            .padding(8.dp)
-            .height(190.dp)
-            .width(110.dp),
-        shape = RoundedCornerShape(8.dp),
+            .height(220.dp)
+            .width(116.dp),
+        shape = RoundedCornerShape(0.dp),
         colors = CardDefaults.cardColors()
             .copy(
-                containerColor = Color.Gray,
+                containerColor = Color.Transparent,
             )
     ) {
         Column {
@@ -61,7 +60,7 @@ fun BookCardCompact(
                 coverId = coverId,
                 modifier = modifier
                     .fillMaxWidth()
-                    .height(150.dp),
+                    .height(175.dp),
                 context = context,
                 size = 'M'
             )
@@ -70,10 +69,13 @@ fun BookCardCompact(
                 text = book.title,
                 style = MaterialTheme.typography.bodySmall,
                 maxLines = 2,
+                lineHeight = 20.sp,
                 overflow = TextOverflow.Ellipsis,
-                color = Color.Black,
-                fontSize = 17.sp,
-                modifier = modifier.align(alignment = Alignment.CenterHorizontally)
+                color = BookShelfTheme.colors.textPlain,
+                fontSize = 16.sp,
+                modifier = modifier
+                    .align(alignment = Alignment.CenterHorizontally)
+                    .padding(top = 4.dp)
             )
         }
     }
@@ -214,7 +216,7 @@ fun BookCardCompactPreview() {
     BookShelfTheme {
         Row {
             BookCardCompact(
-                book = BookItem(1, 1, "Big little title", key = "",listOf("author"), listOf(2020)),
+                book = BookItem(1, 1, "Harry Potter and the Philosopher's Stone", key = "",listOf("author"), listOf(2020)),
             )
             Spacer(modifier = Modifier.weight(1f))
             BookCardCompact(
